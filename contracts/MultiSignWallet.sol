@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.7;
 
-contract MultiSigWallet {
+contract MultiSignWallet {
     // Struct
     // owner struct
     struct Owner {
@@ -33,21 +33,19 @@ contract MultiSigWallet {
     uint confirmationOfOwner;
 
     // Constructor
-    constructor(string[] memory _name, address[] memory _owner_address,uint _confirmationOfOwner) {
-        require(_owner_address.length > 0,"Owner is required");
-        require(_name.length > 0,"Owner's name is required");
-        require(_owner_address.length == _name.length,"Each owner mush have name");
-        require(_confirmationOfOwner > 0 && _confirmationOfOwner <= _owner_address.length,"Confirmation of the owner is required");
+    constructor() {
         wallet_address = payable(address(this));
-        for(uint i = 0; i <_owner_address.length; i++ ){
+        isOwner[msg.sender] = true;
+        owners.push(Owner({name:"Owner_1",owner_address:msg.sender}));
+        // for(uint i = 0; i <_owner_address.length; i++ ){
             
-            require(_owner_address[i] != address(0), "invalid owner");
-            require(!isOwner[_owner_address[i]], "owner not unique");
+        //     require(_owner_address[i] != address(0), "invalid owner");
+        //     require(!isOwner[_owner_address[i]], "owner not unique");
 
-            isOwner[_owner_address[i]] = true;
-            owners.push(Owner({name:_name[i],owner_address:_owner_address[i]}));
-        }
-        confirmationOfOwner = _confirmationOfOwner;
+        //     isOwner[_owner_address[i]] = true;
+        //     owners.push(Owner({name:"_name[i]",owner_address:_owner_address[i]}));
+        // }
+        confirmationOfOwner = 1;
     }
 
     // Modifier
@@ -80,6 +78,27 @@ contract MultiSigWallet {
 
     receive() external payable {
        emit Deposit(msg.sender, msg.value, wallet_address.balance);
+    }
+
+    // add owner to the contract
+    function addOwner(string[] memory _name, address[] memory _owner_address,uint _confirmationOfOwner)
+     public
+     onlyOwner 
+     {
+        require(_owner_address.length > 0,"Owner is required");
+        require(_name.length > 0,"Owner's name is required");
+        require(_owner_address.length == _name.length,"Each owner mush have name");
+        require(_confirmationOfOwner > 0 && _confirmationOfOwner <= _owner_address.length + owners.length,"Confirmation of the owner is invalid");
+        wallet_address = payable(address(this));
+        for(uint i = 0; i <_owner_address.length; i++ ){
+            
+            require(_owner_address[i] != address(0), "invalid owner");
+            require(!isOwner[_owner_address[i]], "owner not unique");
+
+            isOwner[_owner_address[i]] = true;
+            owners.push(Owner({name:_name[i],owner_address:_owner_address[i]}));
+        }
+        confirmationOfOwner = _confirmationOfOwner;
     }
 
     // deposit to this contract
@@ -203,7 +222,7 @@ contract MultiSigWallet {
 }
 
 // owner's name 
-// ["owner01","owner02"]
+// ["owner_02","owner_03"]
 
 // owner's address
 // ["0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2","0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db"]
