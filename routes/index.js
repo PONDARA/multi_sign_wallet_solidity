@@ -12,6 +12,8 @@ var controller = require('../src/controllers/index')
 //   res.render('index', { title: 'test' });
 // });
 
+router.get('/owners',controller.getOwners)
+
 router.get('/solidity', controller.solidity_test);
 router.post('/build',controller.build_contrat)
 

@@ -89,7 +89,6 @@ contract MultiSignWallet {
         require(_name.length > 0,"Owner's name is required");
         require(_owner_address.length == _name.length,"Each owner mush have name");
         require(_confirmationOfOwner > 0 && _confirmationOfOwner <= _owner_address.length + owners.length,"Confirmation of the owner is invalid");
-        wallet_address = payable(address(this));
         for(uint i = 0; i <_owner_address.length; i++ ){
             
             require(_owner_address[i] != address(0), "invalid owner");
